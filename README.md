@@ -1,4 +1,5 @@
-# SecureMessenger-Py
+# ![scr1](https://github.com/user-attachments/assets/3486c428-d681-46df-a971-0c5de4779e18)
+SecureMessenger-Py
 
 A production-ready, end-to-end encrypted (E2EE) messaging application built with **Python**, **PyQt6**, and the **Cryptography** library.
 
