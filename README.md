@@ -1,53 +1,40 @@
-# ![scr1](https://github.com/user-attachments/assets/3486c428-d681-46df-a971-0c5de4779e18)
-SecureMessenger-Py
+# BoltC: Secure E2EE Messenger
+![scr2](https://github.com/user-attachments/assets/6426bf69-9d4e-4cca-bb24-07cc45ba9a7a)
 
-A production-ready, end-to-end encrypted (E2EE) messaging application built with **Python**, **PyQt6**, and the **Cryptography** library.
+BoltC is an open-source, production-ready messaging application designed with a focus on **End-to-End Encryption (E2EE)** for both messages and files. Built with Python and PyQt6, it combines a modern aesthetic with robust security standards.
 
-## 🌟 Features
-- **True End-to-End Encryption:** Uses Elliptic Curve Diffie-Hellman (ECDH) for key exchange. Messages are encrypted locally and can only be decrypted by the intended recipient.
-- **Modern Semi-Transparent UI:** A sleek, dark-themed interface with alpha-channel transparency for a modern aesthetic.
-- **Emoji Support:** Integrated emoji picker for expressive messaging.
-- **Secure Key Derivation:** Uses HKDF (HMAC-based Key Derivation Function) to derive 32-byte AES keys from shared secrets.
-- **Threaded Architecture:** Handles networking and GUI updates independently to ensure a smooth user experience.
+## 🌟 Key Features
+- **End-to-End Encryption (E2EE):** Utilizes the ECDH protocol (Elliptic Curve Diffie-Hellman) on the SECP384R1 curve for secure key exchange.
+- **Secure File Exchange:** Transfer files (up to 10MB) with full end-to-end encryption.
+- **Dedicated Server GUI:** A comprehensive dashboard to manage your relay server with real-time logs and connection monitoring.
+- **Modern UI:** Sleek, semi-transparent dark mode interface (Alpha-blending) with integrated Emoji support.
+- **Hardened Security:** Built-in protection against DoS attacks, packet size enforcement, data sanitization, and buffer overflow prevention.
 
-## 🛡️ Security Implementation
-1. **Handshake:** Every client generates a unique SECP384R1 private key on startup.
-2. **Key Exchange:** Public keys are exchanged via the relay server.
-3. **Encryption:** When a chat starts, a shared secret is generated. This secret is used with Fernet (AES-128 in CBC mode with HMAC-SHA256) to secure every message.
-4. **Privacy:** The server only sees encrypted bytes and metadata required for relaying; it never has access to the plaintext or private keys.
+## 🛡️ Security Architecture
+1. **Key Exchange:** Clients generate ephemeral keys locally upon startup. Public keys are broadcasted via the relay server, but private keys never leave the device.
+2. **Encryption:** Messages and files are secured using AES-128 in CBC mode with HMAC-SHA256 (via Fernet).
+3. **Data Integrity:** Every packet is verified for integrity. The server only sees encrypted bytes and the metadata required for routing.
+4. **Resilience:** Both server and client are hardened against Denial of Service (DoS) attempts involving malformed headers or massive data payloads.
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Python 3.8 or higher
-- Windows/Linux/macOS
+### For Users (Windows)
+Download the `BoltC-Client.exe` from the **Releases** section, launch it, and enter the server's IP address.
 
-### Installation
-1. Download the source files.
-2. Install the required dependencies:
+### For Developers
+1. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
+2. Start the Server: `python server.py`
+3. Start the Client: `python client.py`
 
-### Running the Application
-#### Option A: One-Click (Windows)
-Double-click the `run_messenger.bat` file. This will automatically start the server and two client instances for testing.
-
-#### Option B: Manual (Terminal)
-1. **Start the Server:**
-   ```bash
-   python server.py
-   ```
-2. **Start the Client(s):**
-   ```bash
-   python client.py
-   ```
-
-## 📂 File Descriptions
-- `client.py`: The main GUI application logic and networking.
-- `server.py`: The TCP relay server that facilitates connections.
-- `crypto_utils.py`: The core cryptographic engine.
-- `run_messenger.bat`: A helper script for easy local testing.
+## 🛠️ Build from Source
+To generate standalone executables, run:
+```bash
+build_all.bat
+```
+The compiled files will appear in the `dist/` directory.
 
 ## 📜 License
-This project is open-source and available under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
