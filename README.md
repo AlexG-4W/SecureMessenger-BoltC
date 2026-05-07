@@ -1,40 +1,43 @@
-# BoltC: Secure E2EE Messenger
-![scr2](https://github.com/user-attachments/assets/6426bf69-9d4e-4cca-bb24-07cc45ba9a7a)
+# BoltC - Secure E2EE Relay Messenger 🛡️
 
-BoltC is an open-source, production-ready messaging application designed with a focus on **End-to-End Encryption (E2EE)** for both messages and files. Built with Python and PyQt6, it combines a modern aesthetic with robust security standards.
+BoltC is a robust, privacy-first messenger application built with Python. It features a decentralized-style architecture consisting of an independent relay server and "thick" clients. The server acts purely as an agnostic packet router, relaying encrypted bytes without ever knowing the contents of messages or files, ensuring absolute End-to-End Encryption (E2EE).
 
 ## 🌟 Key Features
-- **End-to-End Encryption (E2EE):** Utilizes the ECDH protocol (Elliptic Curve Diffie-Hellman) on the SECP384R1 curve for secure key exchange.
-- **Secure File Exchange:** Transfer files (up to 10MB) with full end-to-end encryption.
-- **Dedicated Server GUI:** A comprehensive dashboard to manage your relay server with real-time logs and connection monitoring.
-- **Modern UI:** Sleek, semi-transparent dark mode interface (Alpha-blending) with integrated Emoji support.
-- **Hardened Security:** Built-in protection against DoS attacks, packet size enforcement, data sanitization, and buffer overflow prevention.
 
-## 🛡️ Security Architecture
-1. **Key Exchange:** Clients generate ephemeral keys locally upon startup. Public keys are broadcasted via the relay server, but private keys never leave the device.
-2. **Encryption:** Messages and files are secured using AES-128 in CBC mode with HMAC-SHA256 (via Fernet).
-3. **Data Integrity:** Every packet is verified for integrity. The server only sees encrypted bytes and the metadata required for routing.
-4. **Resilience:** Both server and client are hardened against Denial of Service (DoS) attempts involving malformed headers or massive data payloads.
+* **Hybrid E2EE Encryption:** Implements a state-of-the-art cryptographic pipeline. RSA (2048-bit) is used for secure public key exchange, which then derives a shared secret to establish an AES-256-GCM symmetric session key for ultra-fast, authenticated message encryption.
+* **Secure File Streaming:** Capable of transferring files of any size without causing Out-of-Memory (OOM) crashes. Files are chunked into 64KB blocks, each uniquely encrypted with its own Nonce/AAD. Chunks are securely cached as `.tmp` files on the receiver's end until the final SHA-256 hash validation is passed.
+* **Safety Numbers (MITM Protection):** Inspired by Signal and WhatsApp, BoltC provides a UI to verify "Safety Numbers" (SHA-256 fingerprints of public keys). This ensures that the public keys were not tampered with by a malicious server or network actor.
+* **Modern PyQt6 UI:** A sleek, responsive dark-mode interface built with PyQt6. It features non-blocking, self-dismissing Toast notifications, a modern 80-emoji grid popup, and interactive confirmation dialogs for secure file downloads.
 
-## 🚀 Getting Started
+## 🏗️ Architecture Highlights
 
-### For Users (Windows)
-Download the `BoltC-Client.exe` from the **Releases** section, launch it, and enter the server's IP address.
+* **Non-Blocking Network Layer:** The client effectively circumvents Qt Event Loop blocking by dispatching heavy network I/O (like secure file chunk streaming) to dedicated `threading.Thread` workers.
+* **Thread-Safe Signals:** Fully implements PyQt6 `pyqtSignal` mechanisms using native `object` serialization to safely marshal complex binary data and GUI updates across background threads and the main UI loop.
+* **Zero-Knowledge Server:** The server only parses a plain-text header (e.g., `MSG <recipient> <length>`) and blindly forwards the attached encrypted binary payload to the destination socket.
 
-### For Developers
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Start the Server: `python server.py`
-3. Start the Client: `python client.py`
+## 🚀 Installation & Usage
 
-## 🛠️ Build from Source
-To generate standalone executables, run:
+### 1. Install Dependencies
+Ensure you have Python 3.10+ installed. Install the required libraries using pip:
+
 ```bash
-build_all.bat
+pip install -r requirements.txt
 ```
-The compiled files will appear in the `dist/` directory.
 
-## 📜 License
-This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
+### 2. Start the Server
+Run the relay server. By default, it will listen on port `5000`.
+```bash
+python server.py
+```
+
+### 3. Start the Clients
+Run the client application on multiple instances or machines.
+```bash
+python client.py
+```
+1. Enter your chosen username.
+2. Enter the Server IP (use `127.0.0.1` for local testing).
+3. Connect, choose a peer from the "Contacts" list, verify your Safety Numbers, and start chatting securely!
+
+## 🔐 Security Disclaimer
+This project is an educational and experimental implementation of E2EE protocols. While it uses industry-standard cryptography primitives (`cryptography.hazmat`), it has not been audited by professional security researchers. Use at your own risk.
